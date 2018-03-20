@@ -22,8 +22,8 @@ const insertItem = (item) => {
     DB = client.db(DB_NAME);
     
     const itemsCollections = DB.collection('items');
-    itemsCollections.insert(item, (err, result) => {
-      if (err) throw new Error('Failed to insert', item);
+    itemsCollections.insertOne(item, (err, result) => {
+      if (err) throw new Error(err.message);
       console.log('Insert item success', result);
   
       client.close();
