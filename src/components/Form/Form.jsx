@@ -24,24 +24,27 @@ class ItemForm extends Component {
   _onTitleChange = e => {
     this.setState({ title: e.target.value });
   };
+
   _onDescriptionChange = e => {
     this.setState({ descrition: e.target.value });
   };
+
   _onFileChange = e => {
     const file = e.target.files[0];
     this.setState({ file });
   };
+
   _handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state);
 
-    const { title, descrition, file } = this.state;
+    const { title, description, file } = this.state;
     const data = new FormData();
     data.append('title', title);
-    data.append('descrition', descrition);
+    data.append('description', description);
     data.append('picture', file);
 
-    axios.post('/upload', data);
+    axios.post('/upload', data)
+      .then(() => document.location.reload(true));
   };
 
   render() {

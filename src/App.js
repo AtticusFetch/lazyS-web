@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import Form from './components/Form';
+import Items from './components/Items';
 
 import logo from './logo.svg';
 
@@ -20,6 +21,9 @@ class App extends Component {
         </header>
         <div className="Form-wrapper">
           <Form />
+        </div>
+        <div className="Content-wrapper">
+          <Items />
         </div>
       </div>
     );

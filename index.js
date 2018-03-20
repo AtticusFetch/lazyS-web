@@ -13,30 +13,45 @@ const DB_NAME = 'heroku_dkwrnml7';
 let DB = null;
 
 const app = express();
+let DBClient;
 
-const insertItem = (item) => {
+const connectToDB = () => new Promise((resolve, reject) => {
   MongoClient.connect(MONGO_CONNECTION_URL, function(err, client) {
     if (err) throw new Error('Could connect to the db', err);
     console.log("Connected successfully to server");
+    DBClient = client;
   
-    DB = client.db(DB_NAME);
-    
-    const itemsCollections = DB.collection('items', null, err => {
-      if (err) throw new Error(error.message);
-    });
-    console.log('itemsCollections', itemsCollections);
+    DB = DBClient.db(DB_NAME);
+    resolve(DB);
+  });
+});
+
+const insertItem = (item) => connectToDB()
+  .then(db => new Promise(resolve => {
+    const itemsCollections = db.collection('items');
     itemsCollections.insertOne(item, (err, result) => {
       if (err) throw new Error(err.message);
-      console.log('Insert item success', result);
-  
-      client.close();
+      DBClient.close();
+      resolve();
     });
-  });
-};
+  }));
+
+const retreiveItems = () => connectToDB()
+  .then(db => new Promise(resolve => {
+    db.collection('items').find({}).toArray((err, docs) => {
+      if (err) throw new Error(err.message);
+      resolve(docs);
+    });
+  }));
 
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'build/index.html')));
+
+app.get('/items', (req, res) => {
+  retreiveItems()
+    .then(items => res.send(JSON.stringify(items)));
+});
 
 app.post('/upload', upload.fields([{name: 'title'}, {name: 'description'}, {name: 'picture'}]), (req, res) => {
   const file = req.files.picture[0];
@@ -78,8 +93,8 @@ app.post('/upload', upload.fields([{name: 'title'}, {name: 'description'}, {name
         image: result.secure_url,
         title,
         description,
-      });
-      res.send();
+      })
+      .then(() => res.send());
     }
   );
 });
