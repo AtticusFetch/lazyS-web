@@ -28,7 +28,6 @@ class App extends Component {
     reader.readAsDataURL(e.target.files[0]);
   };
   _onSubmit = e => {
-    e.preventDefault();
     console.log(this.state);
   };
 
