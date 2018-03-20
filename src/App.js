@@ -44,7 +44,6 @@ class App extends Component {
           enctype="multipart/form-data"
           action="/upload"
           className="form"
-          onSubmit={this._onSubmit}
         >
           <label className="inputWrapper">
             Item title
