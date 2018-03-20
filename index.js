@@ -10,6 +10,13 @@ express()
   .use(express.static(path.join(__dirname, 'build')))
   .get('/', (req, res) => res.sendFile(path.join(__dirname, 'build/index.html')))
   .post('/upload', upload.single('image'), (req, res) => {
-    console.log(req);
+    console.log('====================')
+    console.log('====================')
+    console.log('====================')
+    console.log('file:', req.file);
+    console.log('====================')
+    console.log('====================')
+    console.log('====================')
+    res.send('Ok');
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
