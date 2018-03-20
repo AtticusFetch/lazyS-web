@@ -9,7 +9,7 @@ const upload = multer({
 });
 const MONGO_CONNECTION_URL = 'mongodb://heroku_dkwrnml7:1u2qsc885fjc4c2o82uaa30ltc@ds219879.mlab.com:19879/heroku_dkwrnml7';
 const PORT = process.env.PORT || 5000;
-const DB_NAME = 'lazys';
+const DB_NAME = 'heroku_dkwrnml7';
 let DB = null;
 
 const app = express();
