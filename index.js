@@ -18,9 +18,8 @@ app.post('/upload', upload.fields([{name: 'title'}, {name: 'description'}, {name
   const file = req.files.picture[0];
   const title = req.body.title;
   const description = req.body.description;
-  console.log('will upload:', `${file.path}.${file.mimetype.split('/')[1]}`);
   cloudinary.uploader.upload(
-    `${file.path}.${file.mimetype.split('/')[1]}`,
+    file.path,
     (result) => {
       console.log(result);
       res.send();
