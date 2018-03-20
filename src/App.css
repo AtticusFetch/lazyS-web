@@ -1,17 +1,17 @@
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+  display: flex;
+  justify-content: space-around;
+  height: 100%;
+  flex-direction: column;
 }
 
 .App-header {
+  display: flex;
   background-color: #222;
-  height: 150px;
+  height: 70px;
   padding: 20px;
   color: white;
+  margin-bottom: 50px;
 }
 
 .App-title {
@@ -27,20 +27,7 @@
   to { transform: rotate(360deg); }
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  width: 30%;
-  justify-content: space-around;
-  height: 30%;
-}
-
-.inputWrapper {
-  height: 100px;
-  display: flex;
-  justify-content: center;
-}
-
-.input {
-  height: 50px;
+.Form-wrapper {
+  width: 40%;
+  padding-left: 40px;
 }
