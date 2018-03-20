@@ -26,3 +26,21 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  justify-content: space-around;
+  height: 30%;
+}
+
+.inputWrapper {
+  height: 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.input {
+  height: 50px;
+}
