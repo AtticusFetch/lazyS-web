@@ -29,9 +29,22 @@
 
 .Form-wrapper {
   width: 40%;
-  padding-left: 40px;
+  margin-left: 40px;
+  position: relative;
 }
 
 .Content-wrapper {
-  padding: 40px;
+  margin: 40px;
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  opacity: 0.45;
+  z-index: 1000;
 }

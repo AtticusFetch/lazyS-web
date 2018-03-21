@@ -13,19 +13,11 @@ import {
   Col
 } from 'reactstrap';
 import shortid from 'shortid';
-import _ from 'lodash';
 
 class ItemsList extends Component {
-  state = {
-    itemChunks: []
+  defaultProps = {
+    itemChunks: [],
   };
-
-  componentDidMount() {
-    axios.get('/items')
-      .then(response => {
-        this.setState({ itemChunks: _.chunk(response.data, 3) });
-      });
-  }
 
   _renderItem = item => (
     <Col sm="4" key={shortid.generate()}>
@@ -46,9 +38,10 @@ class ItemsList extends Component {
   );
 
   render() {
+    const { itemChunks } = this.props;
     return (
       <CardDeck>
-        {this.state.itemChunks.map(this._renderChunk)}
+        {itemChunks.map(this._renderChunk)}
       </CardDeck>
     );
   }

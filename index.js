@@ -15,12 +15,33 @@ let DB = null;
 const app = express();
 let DBClient;
 
+const fields = [
+  {
+    name: 'title'
+  },
+  {
+    name: 'description'
+  },
+  {
+    name: 'picture'
+  },
+  {
+    name: 'type'
+  },
+  {
+    name: 'price'
+  },
+  {
+    name: 'restaurant'
+  },
+];
+
 const connectToDB = () => new Promise((resolve, reject) => {
-  MongoClient.connect(MONGO_CONNECTION_URL, function(err, client) {
+  MongoClient.connect(MONGO_CONNECTION_URL, function (err, client) {
     if (err) throw new Error('Could connect to the db', err);
     console.log("Connected successfully to server");
     DBClient = client;
-  
+
     DB = DBClient.db(DB_NAME);
     resolve(DB);
   });
@@ -28,7 +49,8 @@ const connectToDB = () => new Promise((resolve, reject) => {
 
 const insertItem = (item) => connectToDB()
   .then(db => new Promise(resolve => {
-    const itemsCollections = db.collection('items');
+    console.log('item', item);
+    const itemsCollections = db.collection(item.type);
     itemsCollections.insertOne(item, (err, result) => {
       if (err) throw new Error(err.message);
       DBClient.close();
@@ -38,7 +60,15 @@ const insertItem = (item) => connectToDB()
 
 const retreiveItems = () => connectToDB()
   .then(db => new Promise(resolve => {
-    db.collection('items').find({}).toArray((err, docs) => {
+    db.collection('foodItems').find({}).toArray((err, docs) => {
+      if (err) throw new Error(err.message);
+      resolve(docs);
+    });
+  }));
+  
+const retreiveRestaurants = () => connectToDB()
+  .then(db => new Promise(resolve => {
+    db.collection('restaurants').find({}).toArray((err, docs) => {
       if (err) throw new Error(err.message);
       resolve(docs);
     });
@@ -48,12 +78,17 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'build/index.html')));
 
-app.get('/items', (req, res) => {
+app.get('/foodItems', (req, res) => {
   retreiveItems()
     .then(items => res.send(JSON.stringify(items)));
 });
 
-app.post('/upload', upload.fields([{name: 'title'}, {name: 'description'}, {name: 'picture'}]), (req, res) => {
+app.get('/restaurants', (req, res) => {
+  retreiveRestaurants()
+    .then(items => res.send(JSON.stringify(items)));
+});
+
+app.post('/upload', upload.fields(fields), (req, res) => {
   const file = req.files.picture[0];
   /**
    *  fieldname           Field name specified in the form	
@@ -68,6 +103,10 @@ app.post('/upload', upload.fields([{name: 'title'}, {name: 'description'}, {name
    */
   const title = req.body.title;
   const description = req.body.description;
+  const type = req.body.type;
+  const price = req.body.price;
+  const restaurant = req.body.restaurant;
+
   cloudinary.uploader.upload(
     file.path,
     (result) => {
@@ -89,12 +128,21 @@ app.post('/upload', upload.fields([{name: 'title'}, {name: 'description'}, {name
            secure_url: 'https://res.cloudinary.com/hh73vlsda/image/upload/v1521583976/iajcoo0yhdwszgsnk2zu.png',
            original_filename: 'fdd1a2319bcef5af472bab402238a2e9' }
        */
-      insertItem({
+      let item = {
         image: result.secure_url,
         title,
         description,
-      })
-      .then(() => res.send());
+        type,
+      };
+      if (type === 'foodItems') {
+        item = {
+          ...item,
+          price,
+          restaurant,
+        };
+      }
+      insertItem(item)
+        .then(() => res.send());
     }
   );
 });

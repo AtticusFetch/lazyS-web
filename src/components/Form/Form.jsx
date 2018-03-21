@@ -14,11 +14,31 @@ import {
 
 import './Form.css';
 
+const typesMap = {
+  ['Food Item']: 'foodItems',
+  ['Restaurant']: 'restaurants',
+};
+
 class ItemForm extends Component {
   state = {
     title: '',
     description: '',
     file: '',
+    type: Object.values(typesMap)[0],
+    price: null,
+    restaurant: null,
+    restaurants: []
+  };
+
+  componentDidMount() {
+    this._fetchRestaurants();
+  }
+
+  _fetchRestaurants = () => {
+    axios.get('/restaurants')
+      .then(res => {
+        this.setState({ restaurants: res.data });
+      });
   };
 
   _onTitleChange = e => {
@@ -26,7 +46,7 @@ class ItemForm extends Component {
   };
 
   _onDescriptionChange = e => {
-    this.setState({ descrition: e.target.value });
+    this.setState({ description: e.target.value });
   };
 
   _onFileChange = e => {
@@ -34,22 +54,38 @@ class ItemForm extends Component {
     this.setState({ file });
   };
 
+  _onTypeChange = e => {
+    this.setState({ type: typesMap[e.target.value] });
+  }
+
+  _onRestaurantChange = e => {
+    this.setState({ restaurant: e.target.value.split(' ').join().toLowerCase() });
+  }
+
   _handleSubmit = e => {
     e.preventDefault();
 
-    const { title, description, file } = this.state;
-    const data = new FormData();
-    data.append('title', title);
-    data.append('description', description);
-    data.append('picture', file);
-
-    axios.post('/upload', data)
-      .then(() => document.location.reload(true));
+    this.props.onSubmit(this.state);
   };
 
   render() {
+    const { type, restaurants } = this.state;
+    console.log(type)
     return (
       <Form>
+        <FormGroup row>
+          <Label for="select" sm={2}>Item type</Label>
+          <Col sm={10}>
+            <Input
+              onChange={this._onTypeChange}
+              type="select"
+              name="type"
+              id="select"
+            >
+              {Object.keys(typesMap).map(itemType => <option>{itemType}</option>)}
+            </Input>
+          </Col>
+        </FormGroup>
         <FormGroup row>
           <Label for="title" sm={2}>Title</Label>
           <Col sm={10}>
@@ -74,6 +110,35 @@ class ItemForm extends Component {
             />
           </Col>
         </FormGroup>
+        {type === 'foodItems' && (
+          <React.Fragment>
+            <FormGroup row>
+              <Label for="price" sm={2}>Price</Label>
+              <Col sm={10}>
+                <Input
+                  onChange={this._onPriceChange}
+                  type="number"
+                  name="price"
+                  id="price"
+                  placeholder="Price"
+                />
+              </Col>
+            </FormGroup>
+            <FormGroup row>
+              <Label for="restaurant" sm={2}>Associated restaurant</Label>
+              <Col sm={10}>
+                <Input
+                  onChange={this._onRestaurantChange}
+                  type="select"
+                  name="restaurant"
+                  id="restaurant"
+                >
+                  {restaurants.map(r => <option>{r.title}</option>)}
+                </Input>
+              </Col>
+            </FormGroup>
+          </React.Fragment>
+        )}
         <FormGroup row>
           <Label for="file" sm={2}>File</Label>
           <Col sm={10}>
