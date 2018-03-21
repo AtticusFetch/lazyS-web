@@ -13,7 +13,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 class App extends Component {
   state = {
     itemChunks: [],
-    isLoading: true,
+    isLoading: false,
   };
 
   componentDidMount() {
@@ -21,16 +21,22 @@ class App extends Component {
   }
 
   _fetchItems = () => {
-    axios.get('/foodItems')
-      .then(response => {
-        this.setState({
-          itemChunks: _.chunk(response.data, 3),
+    this.setState({ isLoading: true });
+    Promise.all([axios.get('/foodItems'), axios.get('/restaurants')])
+      .then(responses => {
+        this.setState(state => ({
+          itemChunks: _.chunk(responses[0].data.concat(responses[1].data), 3),
           isLoading: false,
-        });
+        }));
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error(e)
         this.setState({ isLoading: false });
       });
+  };
+  
+  _fetchRestaurants = () => {
+    this.setState({ isLoading: true });
   };
 
   _onSubmit = formData => {

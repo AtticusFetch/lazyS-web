@@ -59,8 +59,12 @@ class ItemForm extends Component {
   }
 
   _onRestaurantChange = e => {
-    this.setState({ restaurant: e.target.value.split(' ').join().toLowerCase() });
+    this.setState({ restaurant: e.target.value });
   }
+
+  _onPriceChange = e => {
+    this.setState({ price: e.target.value });
+  };
 
   _handleSubmit = e => {
     e.preventDefault();
