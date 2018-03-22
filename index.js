@@ -58,11 +58,17 @@ const insertItem = (item) => connectToDB()
     });
   }));
 
-const retreiveItems = () => connectToDB()
+const retreiveItems = restaurantId => connectToDB()
   .then(db => new Promise(resolve => {
-    db.collection('foodItems').find({}).toArray((err, docs) => {
+    const foodCollection = db.collection('foodItems');
+    const restaurantCollection = db.collection('restaurants');
+    restaurantCollection.find({ "_id": restaurantId }).toArray((err, docs) => {
       if (err) throw new Error(err.message);
-      resolve(docs);
+      const restaurantName = docs[0].title;
+      foodCollection.find({ "restaurant": restaurantName }).toArray((err, docs) => {
+        if (err) throw new Error(err.message);
+        resolve(docs);
+      });
     });
   }));
   
@@ -79,7 +85,7 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'build/index.html')));
 
 app.get('/foodItems', (req, res) => {
-  retreiveItems()
+  retreiveItems(req.query.id)
     .then(items => res.send(JSON.stringify(items)));
 });
 

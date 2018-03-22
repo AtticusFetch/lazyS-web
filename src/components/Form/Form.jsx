@@ -74,7 +74,6 @@ class ItemForm extends Component {
 
   render() {
     const { type, restaurants } = this.state;
-    console.log(type)
     return (
       <Form>
         <FormGroup row>
